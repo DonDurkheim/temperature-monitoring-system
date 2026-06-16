@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 600" width="820" height="600">
+  <defs>
+    <marker id="arr-b" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arr-p" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a78bfa"/>
+    </marker>
+    <marker id="arr-o" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+    </marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="600" rx="16" fill="#0f172a"/>
+
+  <!-- Title -->
+  <text x="410" y="34" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#f1f5f9" letter-spacing="0.5">Data Flow</text>
+  <text x="410" y="52" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#64748b">one complete cycle every 2 seconds</text>
+
+  <!-- Participant x-centers: DHT11=75, Arduino=175, LCD=275, PC=375, HiveMQ=480, Flask=590, Browser=715 -->
+
+  <!-- ── Participant boxes ─────────────────────────────────── -->
+  <rect x="28"  y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="75"  y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#22c55e">DHT11</text>
+
+  <rect x="128" y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="175" y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">Arduino</text>
+
+  <rect x="228" y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="275" y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#a78bfa">LCD</text>
+
+  <rect x="328" y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="375" y="82" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">PC Client</text>
+
+  <rect x="433" y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="1.5"/>
+  <text x="480" y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#f97316">HiveMQ</text>
+
+  <rect x="543" y="66" width="94"  height="32" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="590" y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#38bdf8">Flask</text>
+
+  <rect x="658" y="66" width="114" height="32" rx="6" fill="#1e293b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="715" y="87" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#22c55e">Browser</text>
+
+  <!-- ── Lifelines ─────────────────────────────────────────── -->
+  <line x1="75"  y1="98" x2="75"  y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="175" y1="98" x2="175" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="275" y1="98" x2="275" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="375" y1="98" x2="375" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="480" y1="98" x2="480" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="590" y1="98" x2="590" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="715" y1="98" x2="715" y2="560" stroke="#1e3a5f" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- ── Loop: every 2s ────────────────────────────────────── -->
+  <rect x="14" y="108" width="792" height="390" rx="8" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <rect x="14" y="108" width="130" height="20" rx="4" fill="#1e293b"/>
+  <text x="79" y="122" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" font-weight="700" fill="#94a3b8">loop  every 2 seconds</text>
+
+  <!-- Step 1 — Arduino → DHT11: readTemperature() -->
+  <line x1="175" y1="148" x2="79"  y2="148" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <rect x="84"  y="136" width="86" height="13" rx="3" fill="#0f172a"/>
+  <text x="127" y="146" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#94a3b8">readTemperature()</text>
+
+  <!-- Step 2 — DHT11 → Arduino: float °C (dashed return) -->
+  <line x1="75"  y1="174" x2="171" y2="174" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-p)"/>
+  <rect x="82"  y="162" width="82" height="13" rx="3" fill="#0f172a"/>
+  <text x="123" y="172" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#a78bfa">return float °C</text>
+
+  <!-- Step 3 — Arduino → LCD: display temp -->
+  <line x1="175" y1="206" x2="271" y2="206" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-p)"/>
+  <rect x="178" y="194" width="90" height="13" rx="3" fill="#0f172a"/>
+  <text x="223" y="204" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#a78bfa">row 1 "Temp: xx.xx C"</text>
+
+  <!-- Step 4 — Arduino → PC: Serial TEMP:xx.xx -->
+  <line x1="175" y1="240" x2="371" y2="240" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <rect x="218" y="228" width="112" height="13" rx="3" fill="#0f172a"/>
+  <text x="274" y="238" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#94a3b8">Serial "TEMP:xx.xx"</text>
+
+  <!-- Step 5 — PC → HiveMQ: publish -->
+  <line x1="375" y1="276" x2="476" y2="276" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr-o)"/>
+  <rect x="380" y="264" width="92" height="13" rx="3" fill="#0f172a"/>
+  <text x="426" y="274" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#f97316">publish(topic, value)</text>
+
+  <!-- Step 6 — HiveMQ → Flask: on_message -->
+  <line x1="480" y1="312" x2="586" y2="312" stroke="#f97316" stroke-width="1.5" marker-end="url(#arr-o)"/>
+  <rect x="487" y="300" width="92" height="13" rx="3" fill="#0f172a"/>
+  <text x="533" y="310" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#f97316">on_message() callback</text>
+
+  <!-- Step 7 — Flask → Browser: emit -->
+  <line x1="590" y1="348" x2="711" y2="348" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-b)"/>
+  <rect x="596" y="336" width="112" height="13" rx="3" fill="#0f172a"/>
+  <text x="652" y="346" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#94a3b8">emit("temperature_update")</text>
+
+  <!-- Step 8 — Browser self: update chart -->
+  <path d="M 715 378 Q 778 378 778 394 Q 778 410 715 410" fill="none" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-g)"/>
+  <text x="722" y="393" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#22c55e">update chart</text>
+  <text x="722" y="406" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#22c55e">+ cards</text>
+
+  <!-- ── Loop: continuously (scroll) ──────────────────────── -->
+  <rect x="14" y="512" width="340" height="46" rx="8" fill="none" stroke="#334155" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <rect x="14" y="512" width="130" height="20" rx="4" fill="#1e293b"/>
+  <text x="79" y="526" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" font-weight="700" fill="#94a3b8">loop  continuously</text>
+
+  <line x1="175" y1="544" x2="271" y2="544" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr-p)"/>
+  <rect x="178" y="532" width="90" height="13" rx="3" fill="#0f172a"/>
+  <text x="223" y="542" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8.5" fill="#a78bfa">scroll name (row 0)</text>
+</svg>

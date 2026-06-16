@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/>
+    </marker>
+    <marker id="arr-orange" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f97316"/>
+    </marker>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="560" rx="16" fill="#0f172a"/>
+
+  <!-- ══ COLUMN 1: Hardware ══════════════════════════════════════ -->
+  <rect x="18" y="18" width="162" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="99" y="42" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" letter-spacing="1.5">HARDWARE</text>
+
+  <!-- DHT11 -->
+  <rect x="38" y="56" width="122" height="54" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="99" y="76" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#22c55e">DHT11</text>
+  <text x="99" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">Temperature Sensor</text>
+  <text x="99" y="104" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">GPIO 2</text>
+
+  <!-- Arrow DHT11→Arduino -->
+  <line x1="99" y1="110" x2="99" y2="148" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="103" y="133" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#94a3b8">every 2 s</text>
+
+  <!-- Arduino Uno -->
+  <rect x="38" y="150" width="122" height="54" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2" filter="url(#glow)"/>
+  <text x="99" y="170" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Arduino Uno</text>
+  <text x="99" y="185" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">ATmega328P</text>
+  <text x="99" y="197" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">9600 baud</text>
+
+  <!-- Arrow Arduino→LCD -->
+  <line x1="99" y1="204" x2="99" y2="242" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="103" y="227" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#a78bfa">I&#178;C SDA/SCL</text>
+
+  <!-- LCD -->
+  <rect x="38" y="244" width="122" height="54" rx="8" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="99" y="264" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#a78bfa">16&#xD7;2 LCD</text>
+  <text x="99" y="279" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">I&#178;C addr 0x27</text>
+  <text x="99" y="291" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">local display</text>
+
+  <!-- ══ COLUMN 2: PC Client ════════════════════════════════════ -->
+  <rect x="210" y="18" width="162" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="291" y="42" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" letter-spacing="1.5">PC CLIENT</text>
+
+  <!-- Serial Reader -->
+  <rect x="230" y="56" width="122" height="54" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="291" y="76" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Serial Reader</text>
+  <text x="291" y="92" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">pyserial</text>
+  <text x="291" y="104" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">9600 baud</text>
+
+  <!-- Arrow Serial→Parser -->
+  <line x1="291" y1="110" x2="291" y2="148" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Parser -->
+  <rect x="230" y="150" width="122" height="54" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="291" y="170" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">TEMP: Parser</text>
+  <text x="291" y="185" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">strip prefix</text>
+  <text x="291" y="197" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">extract float value</text>
+
+  <!-- Arrow Parser→Publisher -->
+  <line x1="291" y1="204" x2="291" y2="242" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- MQTT Publisher -->
+  <rect x="230" y="244" width="122" height="54" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="291" y="264" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">MQTT Publisher</text>
+  <text x="291" y="279" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">paho-mqtt</text>
+  <text x="291" y="291" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">TCP port 1883</text>
+
+  <!-- ══ COLUMN 3: Cloud ════════════════════════════════════════ -->
+  <rect x="402" y="18" width="162" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="483" y="42" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" letter-spacing="1.5">CLOUD / MQTT</text>
+
+  <!-- HiveMQ Broker -->
+  <rect x="422" y="150" width="122" height="72" rx="8" fill="#0f172a" stroke="#f97316" stroke-width="2" filter="url(#glow)"/>
+  <text x="483" y="174" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#f97316">HiveMQ Broker</text>
+  <text x="483" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">broker.hivemq.com</text>
+  <text x="483" y="204" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">port 1883</text>
+  <text x="483" y="216" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#475569">student/sensor/temp/dondurkheim</text>
+
+  <!-- ══ COLUMN 4: VPS Dashboard ════════════════════════════════ -->
+  <rect x="594" y="18" width="188" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="688" y="42" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#475569" letter-spacing="1.5">VPS DASHBOARD</text>
+
+  <!-- Flask + SocketIO -->
+  <rect x="614" y="150" width="148" height="72" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="688" y="174" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#38bdf8">Flask + SocketIO</text>
+  <text x="688" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">MQTT subscriber</text>
+  <text x="688" y="204" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">eventlet async</text>
+  <text x="688" y="216" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">port 24500</text>
+
+  <!-- Arrow Flask→Browser -->
+  <line x1="688" y1="222" x2="688" y2="262" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="692" y="246" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#94a3b8">WebSocket</text>
+
+  <!-- Browser -->
+  <rect x="614" y="264" width="148" height="54" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="688" y="284" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#22c55e">Browser</text>
+  <text x="688" y="299" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">Chart.js live chart</text>
+  <text x="688" y="311" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#64748b">real-time updates</text>
+
+  <!-- ══ CROSS-COLUMN ARROWS ══════════════════════════════════ -->
+
+  <!-- Arduino → Serial Reader (USB Serial) -->
+  <line x1="180" y1="177" x2="228" y2="177" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="184" y="170" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#94a3b8">USB Serial</text>
+  <text x="184" y="181" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#94a3b8">TEMP:xx.xx</text>
+
+  <!-- Publisher → HiveMQ (diagonal, dashed orange) -->
+  <line x1="352" y1="271" x2="420" y2="205" stroke="#f97316" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr-orange)"/>
+  <text x="352" y="252" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#f97316">MQTT</text>
+  <text x="352" y="263" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#f97316">publish</text>
+
+  <!-- HiveMQ → Flask (horizontal, dashed orange) -->
+  <line x1="544" y1="191" x2="612" y2="191" stroke="#f97316" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arr-orange)"/>
+  <text x="548" y="184" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#f97316">MQTT subscribe</text>
+
+  <!-- ══ LEGEND ════════════════════════════════════════════════ -->
+  <rect x="18" y="468" width="764" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="36" y="488" font-family="Segoe UI, Arial, sans-serif" font-size="9" font-weight="700" fill="#475569" letter-spacing="1">LEGEND</text>
+
+  <line x1="36" y1="510" x2="66" y2="510" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="72" y="514" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#94a3b8">data / control flow</text>
+
+  <line x1="200" y1="510" x2="230" y2="510" stroke="#f97316" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arr-orange)"/>
+  <text x="236" y="514" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#94a3b8">MQTT over TCP</text>
+
+  <rect x="370" y="503" width="12" height="12" rx="2" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="388" y="514" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#94a3b8">sensor / browser</text>
+
+  <rect x="510" y="503" width="12" height="12" rx="2" fill="#0f172a" stroke="#f97316" stroke-width="1.5"/>
+  <text x="528" y="514" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#94a3b8">cloud broker</text>
+
+  <rect x="630" y="503" width="12" height="12" rx="2" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="648" y="514" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#94a3b8">core pipeline nodes</text>
+</svg>
