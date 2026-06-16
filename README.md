@@ -24,39 +24,140 @@ An end-to-end IoT pipeline: a DHT11 sensor on an Arduino Uno reads temperature e
 
 ## System Architecture
 
-```mermaid
-flowchart LR
-    subgraph hw["🔧 Hardware"]
-        DHT11["DHT11\nSensor"]
-        UNO["Arduino Uno"]
-        LCD["16×2 I²C LCD\n0x27"]
-    end
+<div align="center">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 540" width="780" height="540" style="max-width:100%">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/>
+    </marker>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
 
-    subgraph pc["💻 PC Client"]
-        SERIAL["Serial Reader\n9600 baud"]
-        PARSER["TEMP: Parser"]
-        PUB["paho-mqtt Publisher"]
-    end
+  <!-- Background -->
+  <rect width="780" height="540" rx="16" fill="#0f172a"/>
 
-    subgraph cloud["☁️ Cloud"]
-        BROKER["HiveMQ\nbroker.hivemq.com:1883"]
-        TOPIC["student/sensor/temperature\n/dondurkheim"]
-    end
+  <!-- ── COLUMN 1: Hardware ─────────────────────────────── -->
+  <!-- Group box -->
+  <rect x="20" y="20" width="160" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="100" y="44" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">🔧 HARDWARE</text>
 
-    subgraph dashboard["🖥️ VPS Dashboard"]
-        FLASK["Flask + SocketIO\nport 24500"]
-        UI["Browser\nLive Chart"]
-    end
+  <!-- DHT11 -->
+  <rect x="40" y="60" width="120" height="52" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="100" y="81" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#22c55e">DHT11</text>
+  <text x="100" y="96" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">Temp Sensor</text>
+  <text x="100" y="108" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">GPIO 2</text>
 
-    DHT11 -->|"GPIO 2 / 2s"| UNO
-    UNO -->|"I²C SDA/SCL"| LCD
-    UNO -->|"USB Serial\nTEMP:xx.xx"| SERIAL
-    SERIAL --> PARSER --> PUB
-    PUB -->|"MQTT TCP 1883"| BROKER
-    BROKER --> TOPIC
-    TOPIC -->|"MQTT subscribe"| FLASK
-    FLASK -->|"WebSocket"| UI
-```
+  <!-- Arrow DHT11 → Arduino -->
+  <line x1="100" y1="112" x2="100" y2="146" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="104" y="133" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#94a3b8">every 2s</text>
+
+  <!-- Arduino Uno -->
+  <rect x="40" y="148" width="120" height="52" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="2" filter="url(#glow)"/>
+  <text x="100" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#38bdf8">Arduino Uno</text>
+  <text x="100" y="184" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">ATmega328P</text>
+  <text x="100" y="196" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">9600 baud</text>
+
+  <!-- Arrow Arduino → LCD -->
+  <line x1="100" y1="200" x2="100" y2="234" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="104" y="221" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#94a3b8">I²C SDA/SCL</text>
+
+  <!-- LCD -->
+  <rect x="40" y="236" width="120" height="52" rx="8" fill="#0f172a" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="100" y="257" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#a78bfa">16×2 LCD</text>
+  <text x="100" y="272" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">I²C addr 0x27</text>
+  <text x="100" y="284" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">local display</text>
+
+  <!-- ── COLUMN 2: PC Client ───────────────────────────── -->
+  <rect x="210" y="20" width="160" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="290" y="44" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">💻 PC CLIENT</text>
+
+  <!-- Serial Reader -->
+  <rect x="230" y="60" width="120" height="52" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="290" y="81" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#38bdf8">Serial Reader</text>
+  <text x="290" y="96" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">pyserial</text>
+  <text x="290" y="108" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">9600 baud</text>
+
+  <!-- Arrow Serial → Parser -->
+  <line x1="290" y1="112" x2="290" y2="146" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Parser -->
+  <rect x="230" y="148" width="120" height="52" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="290" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#38bdf8">TEMP: Parser</text>
+  <text x="290" y="184" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">strip prefix</text>
+  <text x="290" y="196" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">→ float value</text>
+
+  <!-- Arrow Parser → Publisher -->
+  <line x1="290" y1="200" x2="290" y2="234" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- MQTT Publisher -->
+  <rect x="230" y="236" width="120" height="52" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="290" y="257" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#38bdf8">MQTT Publisher</text>
+  <text x="290" y="272" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">paho-mqtt</text>
+  <text x="290" y="284" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">TCP 1883</text>
+
+  <!-- ── COLUMN 3: Cloud ───────────────────────────────── -->
+  <rect x="400" y="20" width="160" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="480" y="44" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">☁️ CLOUD / MQTT</text>
+
+  <!-- HiveMQ Broker -->
+  <rect x="420" y="148" width="120" height="68" rx="8" fill="#0f172a" stroke="#f97316" stroke-width="1.5" filter="url(#glow)"/>
+  <text x="480" y="172" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#f97316">HiveMQ</text>
+  <text x="480" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">broker.hivemq.com</text>
+  <text x="480" y="200" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">port 1883</text>
+  <text x="480" y="213" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#475569">student/sensor/temp</text>
+
+  <!-- ── COLUMN 4: VPS Dashboard ──────────────────────── -->
+  <rect x="590" y="20" width="170" height="500" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+  <text x="675" y="44" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" fill="#64748b" letter-spacing="1">🖥️ VPS DASHBOARD</text>
+
+  <!-- Flask + SocketIO -->
+  <rect x="610" y="148" width="130" height="68" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+  <text x="675" y="172" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#38bdf8">Flask + SocketIO</text>
+  <text x="675" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">MQTT subscriber</text>
+  <text x="675" y="200" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">eventlet async</text>
+  <text x="675" y="213" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">port 24500</text>
+
+  <!-- Arrow Flask → Browser -->
+  <line x1="675" y1="216" x2="675" y2="258" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="679" y="241" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#94a3b8">WebSocket</text>
+
+  <!-- Browser -->
+  <rect x="610" y="260" width="130" height="52" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="675" y="281" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" font-weight="700" fill="#22c55e">Browser</text>
+  <text x="675" y="296" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">Chart.js live chart</text>
+  <text x="675" y="308" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="9" fill="#64748b">real-time updates</text>
+
+  <!-- ── CROSS-COLUMN ARROWS ───────────────────────────── -->
+  <!-- Arduino → Serial Reader (USB) -->
+  <line x1="180" y1="174" x2="228" y2="174" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="194" y="168" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#94a3b8">USB Serial</text>
+  <text x="194" y="179" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#94a3b8">TEMP:xx.xx</text>
+
+  <!-- Publisher → HiveMQ -->
+  <line x1="370" y1="262" x2="418" y2="185" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="378" y="236" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#f97316">MQTT publish</text>
+
+  <!-- HiveMQ → Flask -->
+  <line x1="542" y1="185" x2="608" y2="185" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="549" y="179" font-family="Segoe UI,Arial,sans-serif" font-size="8" fill="#f97316">MQTT subscribe</text>
+
+  <!-- ── LEGEND ────────────────────────────────────────── -->
+  <rect x="20" y="460" width="740" height="60" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <line x1="40" y1="490" x2="70" y2="490" stroke="#38bdf8" stroke-width="2" marker-end="url(#arr)"/>
+  <text x="76" y="494" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">data flow</text>
+  <line x1="160" y1="490" x2="190" y2="490" stroke="#f97316" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+  <text x="196" y="494" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">MQTT (TCP)</text>
+  <circle cx="320" cy="490" r="5" fill="none" stroke="#22c55e" stroke-width="2"/>
+  <text x="330" y="494" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">sensor / browser endpoint</text>
+  <circle cx="510" cy="490" r="5" fill="none" stroke="#f97316" stroke-width="2"/>
+  <text x="520" y="494" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">cloud broker</text>
+  <circle cx="640" cy="490" r="5" fill="none" stroke="#38bdf8" stroke-width="2"/>
+  <text x="650" y="494" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">core nodes</text>
+</svg>
+</div>
 
 ---
 
@@ -64,27 +165,27 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-    participant DHT11
-    participant Arduino
-    participant LCD
-    participant PC as PC Client
-    participant Broker as HiveMQ
-    participant Flask
-    participant Browser
+    participant A as Arduino
+    participant D as DHT11
+    participant L as LCD
+    participant P as PC Client
+    participant B as HiveMQ
+    participant F as Flask
+    participant W as Browser
 
     loop Every 2 seconds
-        Arduino->>DHT11: readTemperature()
-        DHT11-->>Arduino: float °C
-        Arduino->>LCD: row 1 → "Temp: xx.xx C"
-        Arduino->>PC: Serial "TEMP:xx.xx"
-        PC->>Broker: publish(topic, value)
-        Broker->>Flask: on_message callback
-        Flask->>Browser: emit("temperature_update")
-        Browser->>Browser: update chart + cards
+        A->>D: readTemperature()
+        D-->>A: float °C
+        A->>L: row 1 "Temp: xx.xx C"
+        A->>P: Serial "TEMP:xx.xx"
+        P->>B: publish(topic, value)
+        B->>F: on_message()
+        F->>W: emit("temperature_update")
+        W->>W: update chart + cards
     end
 
     loop Continuously
-        Arduino->>LCD: scroll candidate name (row 0)
+        A->>L: scroll name (row 0)
     end
 ```
 
