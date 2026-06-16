@@ -2,203 +2,358 @@
 
 # 🌡️ IoT Temperature Monitor
 
-**Real-time temperature sensing, local display, and MQTT telemetry over the internet.**
+**Real-time temperature sensing, LCD display, and MQTT telemetry over the Internet**
 
-[![Arduino](https://img.shields.io/badge/Arduino-Uno-00979D?style=for-the-badge&logo=arduino&logoColor=white)](https://www.arduino.cc/)
-[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![MQTT](https://img.shields.io/badge/MQTT-HiveMQ-660066?style=for-the-badge&logo=mqtt&logoColor=white)](https://www.hivemq.com/)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Arduino](https://img.shields.io/badge/Arduino-Uno-00979D?style=for-the-badge\&logo=arduino\&logoColor=white)](https://www.arduino.cc/)
+[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge\&logo=python\&logoColor=white)](https://www.python.org/)
+[![MQTT](https://img.shields.io/badge/MQTT-HiveMQ-660066?style=for-the-badge\&logo=mqtt\&logoColor=white)](https://www.hivemq.com/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows-lightgrey?style=for-the-badge)]()
 
 </div>
 
 ---
 
-## Overview
+# Overview
 
-An end-to-end embedded IoT system that reads ambient temperature from a DHT11 sensor, displays the candidate name and live temperature on a 16×2 I²C LCD, streams readings over USB Serial to a PC client, and publishes them to an MQTT broker for remote consumption.
+This project implements an end-to-end embedded IoT system that:
+
+* Reads temperature from a DHT11 sensor using an Arduino Uno.
+* Displays the candidate name and live temperature on a 16×2 I²C LCD.
+* Scrolls the candidate name horizontally when it exceeds 16 characters.
+* Sends temperature readings to a PC via USB serial communication.
+* Uses a Python client to monitor incoming values in real time.
+* Publishes temperature readings to an MQTT broker for remote consumption.
 
 ---
 
-## System Architecture
+# Features
+
+* DHT11 temperature acquisition.
+* Real-time LCD display.
+* Automatic horizontal scrolling for long names.
+* USB Serial communication.
+* Python monitoring client.
+* MQTT publishing.
+* Automatic serial port detection.
+* Linux and Windows support.
+
+---
+
+# System Architecture
 
 ```mermaid
 flowchart LR
-    subgraph Hardware["🔧 Hardware Layer"]
-        DHT11["DHT11\nSensor"]
-        UNO["Arduino Uno"]
-        LCD["16×2 I²C LCD\n0x27"]
-    end
 
-    subgraph PC["💻 PC Client (Python)"]
-        SERIAL["Serial Reader\n9600 baud"]
-        PARSER["TEMP: Parser"]
-        PUB["paho-mqtt\nPublisher"]
-    end
+    DHT11["🌡️ DHT11 Sensor"]
+    UNO["Arduino Uno"]
+    LCD["16×2 I²C LCD"]
+    PC["Python PC Client"]
+    BROKER["HiveMQ Broker"]
+    SUB["MQTT Subscribers"]
 
-    subgraph Cloud["☁️ Cloud / Broker"]
-        BROKER["HiveMQ\nbroker.hivemq.com:1883"]
-        TOPIC["Topic:\nstudent/sensor/temperature"]
-    end
-
-    subgraph Consumers["📡 Subscribers"]
-        SUB["Any MQTT\nSubscriber"]
-    end
-
-    DHT11 -->|"GPIO 2 / every 2s"| UNO
-    UNO -->|"I²C (SDA/SCL)"| LCD
-    UNO -->|"USB Serial\nTEMP:xx.xx"| SERIAL
-    SERIAL --> PARSER
-    PARSER --> PUB
-    PUB -->|"TCP Port 1883"| BROKER
-    BROKER --> TOPIC
-    TOPIC --> SUB
+    DHT11 -->|"Temperature readings"| UNO
+    UNO -->|"I²C"| LCD
+    UNO -->|"USB Serial (9600 baud)"| PC
+    PC -->|"MQTT"| BROKER
+    BROKER --> SUB
 ```
 
 ---
 
-## Data Flow
+# Data Flow
 
 ```mermaid
 sequenceDiagram
     participant DHT11
     participant Arduino
     participant LCD
-    participant PC as PC Client
-    participant Broker as MQTT Broker
-    participant Sub as Subscriber
+    participant PC
+    participant Broker
+    participant Subscriber
 
     loop Every 2 seconds
-        Arduino->>DHT11: readTemperature()
-        DHT11-->>Arduino: float (°C)
-        Arduino->>LCD: setCursor(0,1) + print "Temp: xx.xx C"
-        Arduino->>PC: Serial "TEMP:xx.xx\n"
+        Arduino->>DHT11: Read temperature
+        DHT11-->>Arduino: Temperature value
+        Arduino->>LCD: Display temperature
+        Arduino->>PC: TEMP:xx.xx
     end
 
     loop Continuously
-        Arduino->>LCD: scroll candidate name (row 0)
+        Arduino->>LCD: Scroll candidate name
     end
 
-    PC->>Broker: connect(broker.hivemq.com, 1883)
-    loop On each TEMP: line
-        PC->>PC: parse temp_value
-        PC->>Broker: publish("student/sensor/temperature", temp_value)
-        Broker->>Sub: forward message
-    end
+    PC->>Broker: Publish value
+    Broker->>Subscriber: Forward message
 ```
 
 ---
 
-## Hardware
+# Hardware Components
 
-| Component | Detail |
-|-----------|--------|
-| Microcontroller | Arduino Uno |
-| Temperature Sensor | DHT11 — data pin **GPIO 2** |
-| Display | 16×2 LCD, I²C address `0x27` |
-| Communication | USB Serial @ 9600 baud |
+| Component     | Description              |
+| ------------- | ------------------------ |
+| Arduino Uno   | Main controller          |
+| DHT11 Sensor  | Temperature sensor       |
+| 16×2 LCD      | Display module           |
+| I²C Interface | LCD communication        |
+| USB Cable     | Arduino-PC communication |
 
-### Wiring
+---
+
+# Wiring
+
+## DHT11 Connections
+
+| DHT11 Pin | Arduino Uno |
+| --------- | ----------- |
+| VCC       | 5V          |
+| DATA      | D2          |
+| GND       | GND         |
+
+## LCD Connections
+
+| LCD Pin | Arduino Uno |
+| ------- | ----------- |
+| SDA     | A4          |
+| SCL     | A5          |
+| VCC     | 5V          |
+| GND     | GND         |
+
+---
+
+# LCD Layout
 
 ```
-DHT11  DATA  →  Arduino D2
-LCD    SDA   →  Arduino A4
-LCD    SCL   →  Arduino A5
-LCD    VCC   →  5V
-LCD    GND   →  GND
-DHT11  VCC   →  3.3V or 5V
-DHT11  GND   →  GND
+┌────────────────┐
+│ Cyubahiro Don  │
+│ Temp: 25.60 C  │
+└────────────────┘
+```
+
+* Row 1 displays the candidate name.
+* Row 2 displays the temperature.
+* Names longer than 16 characters automatically scroll horizontally.
+
+---
+
+# Name Scrolling
+
+If the candidate name exceeds the width of the LCD, horizontal scrolling is performed automatically.
+
+Example:
+
+```
+Cyubahiro Don D
+yubahiro Don Du
+ubahiro Don Dur
+bahiro Don Durk
+...
 ```
 
 ---
 
-## Project Structure
+# Project Structure
 
-```
+```text
 .
 ├── arduino/
-│   └── temp_display.ino   # Arduino sketch (sensor + LCD + serial output)
+│   └── temp_display.ino
 ├── pc_client/
-│   └── pc_client.py       # Python client (serial reader + MQTT publisher)
-└── README.md
+│   └── pc_client.py
+├── screenshots/
+│   ├── lcd_display.jpg
+│   ├── serial_monitor.jpg
+│   ├── python_client.jpg
+│   └── mqtt_dashboard.jpg
+├── README.md
+└── LICENSE
 ```
 
 ---
 
-## Getting Started
+# Software Requirements
 
-### Arduino
+## Arduino Libraries
 
-1. Install the following libraries via Arduino Library Manager:
-   - `DHT sensor library` by Adafruit
-   - `LiquidCrystal_I2C` by Frank de Brabander
-   - `Wire` (bundled with Arduino IDE)
+Install from Arduino Library Manager:
 
-2. Open `arduino/temp_display.ino` and update the candidate name if needed:
-   ```cpp
-   String candidateName = "Cyubahiro Don Durkheim";
-   ```
+* DHT Sensor Library (Adafruit)
+* Adafruit Unified Sensor
+* LiquidCrystal_I2C
+* Wire
 
-3. Flash to your Arduino Uno.
+---
 
-### PC Client
+## Python Dependencies
 
-**Requirements:** Python 3.8+
+Install with:
 
 ```bash
 pip install pyserial paho-mqtt
 ```
 
-**Run:**
+---
+
+# Running the System
+
+## Step 1: Upload Arduino Program
+
+Open:
+
+```text
+arduino/temp_display.ino
+```
+
+Update the candidate name if necessary:
+
+```cpp
+String candidateName = "Cyubahiro Don Durkheim";
+```
+
+Upload the sketch to the Arduino Uno.
+
+---
+
+## Step 2: Start the PC Client
 
 ```bash
 python pc_client/pc_client.py
 ```
 
-The script auto-detects the Arduino port. To pin a specific port, set `COM_PORT` in the script:
+Example output:
 
-```python
-COM_PORT = "/dev/ttyACM0"   # Linux
-COM_PORT = "COM3"            # Windows
+```text
+=== PC Monitoring and MQTT Transmission ===
+
+[11:19:03] Received Temperature: 25.0 °C
+[11:19:05] Received Temperature: 25.0 °C
 ```
 
 ---
 
-## Configuration
+# Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `COM_PORT` | `None` | Serial port — `None` enables auto-detect |
-| `BAUD_RATE` | `9600` | Must match Arduino sketch |
-| `MQTT_BROKER` | `broker.hivemq.com` | Public HiveMQ broker |
-| `MQTT_PORT` | `1883` | Standard MQTT port |
-| `MQTT_TOPIC` | `student/sensor/temperature` | Topic to publish readings |
+| Variable      | Default Value              | Description                |
+| ------------- | -------------------------- | -------------------------- |
+| COM_PORT      | None                       | Automatic port detection   |
+| BAUD_RATE     | 9600                       | Serial communication speed |
+| READ_INTERVAL | 2000 ms                    | Sensor sampling interval   |
+| MQTT_BROKER   | broker.hivemq.com          | MQTT broker                |
+| MQTT_PORT     | 1883                       | Broker port                |
+| MQTT_TOPIC    | student/sensor/temperature | Publish topic              |
 
 ---
 
-## Serial Protocol
+# Communication Names
 
-The Arduino emits a single line per reading over USB Serial:
+## Serial Communication
 
-```
+| Parameter | Value        |
+| --------- | ------------ |
+| Interface | USB Serial   |
+| Port      | /dev/ttyACM0 |
+| Baud Rate | 9600         |
+| Format    | TEMP:xx.xx   |
+
+Example:
+
+```text
 TEMP:25.60
 ```
 
-The PC client filters for lines starting with `TEMP:`, strips the prefix, and publishes the numeric value to MQTT. Any other serial output is printed as debug info.
+---
+
+## MQTT Communication
+
+| Parameter | Value                      |
+| --------- | -------------------------- |
+| Protocol  | MQTT                       |
+| Broker    | broker.hivemq.com          |
+| Port      | 1883                       |
+| Topic     | student/sensor/temperature |
 
 ---
 
-## LCD Layout
+# Serial Protocol
 
+The Arduino periodically sends data in the format:
+
+```text
+TEMP:25.60
 ```
-┌────────────────┐
-│ Cyubahiro Don  │  ← candidate name (scrolls if > 16 chars)
-│ Temp: 25.60 C  │  ← live temperature
-└────────────────┘
+
+The Python client:
+
+1. Reads the serial line.
+2. Extracts the temperature value.
+3. Displays it in real time.
+4. Publishes the value to the MQTT broker.
+
+---
+
+# Screenshots
+
+## LCD Display
+
+![LCD Display](screenshots/lcd_display.jpg)
+
+---
+
+## Serial Monitor
+
+![Serial Monitor](screenshots/serial_monitor.jpg)
+
+---
+
+## Python Client
+
+![Python Client](screenshots/python_client.jpg)
+
+---
+
+## MQTT Dashboard
+
+![MQTT Dashboard](screenshots/mqtt_dashboard.jpg)
+
+---
+
+# Submission Checklist
+
+* [x] System architecture diagram.
+* [x] Temperature sensor reading implemented.
+* [x] LCD display implemented.
+* [x] Horizontal scrolling implemented.
+* [x] Serial communication implemented.
+* [x] PC monitoring application implemented.
+* [x] MQTT publishing implemented.
+* [x] Communication names documented.
+* [x] Source code pushed to GitHub.
+* [x] Screenshots included.
+
+---
+
+# MQTT Topic
+
+```text
+student/sensor/temperature
 ```
 
 ---
 
-## License
+# Repository
 
-MIT © Cyubahiro Don Durkheim
+```text
+https://github.com/DonDurkheim/temperature-monitoring-system
+```
+
+---
+
+# Author
+
+**Cyubahiro Don Durkheim**
+
+---
+
+# License
+
+MIT License
