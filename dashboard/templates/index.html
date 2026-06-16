@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IoT Temperature Dashboard</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px;
+    }
+
+    header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #f1f5f9;
+    }
+
+    header p {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      color: #64748b;
+      letter-spacing: 0.3px;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      margin-right: 6px;
+      vertical-align: middle;
+      transition: background 0.4s;
+    }
+    .status-dot.live { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+
+    .cards {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 28px 36px;
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .card .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+
+    .card .value {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #38bdf8;
+      line-height: 1;
+    }
+
+    .card .unit {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    #temp-card .value { color: #38bdf8; }
+    #max-card .value  { color: #f97316; }
+    #min-card .value  { color: #a78bfa; }
+
+    .chart-wrap {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .chart-wrap h2 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 16px;
+    }
+
+    canvas { width: 100% !important; }
+
+    footer {
+      margin-top: 40px;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌡️ IoT Temperature Dashboard</h1>
+    <p><span class="status-dot" id="dot"></span><span id="status-text">Waiting for data...</span></p>
+  </header>
+
+  <div class="cards">
+    <div class="card" id="temp-card">
+      <div class="label">Current</div>
+      <div class="value" id="temp">--</div>
+      <div class="unit">°C</div>
+    </div>
+    <div class="card" id="max-card">
+      <div class="label">Max</div>
+      <div class="value" id="max">--</div>
+      <div class="unit">°C</div>
+    </div>
+    <div class="card" id="min-card">
+      <div class="label">Min</div>
+      <div class="value" id="min">--</div>
+      <div class="unit">°C</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <h2>Temperature over time</h2>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <footer>made with ♥ by Don Durkheim</footer>
+
+  <script>
+    const socket = io();
+    const dot = document.getElementById('dot');
+    const statusText = document.getElementById('status-text');
+
+    let maxVal = null, minVal = null;
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Temperature (°C)',
+          data: [],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56,189,248,0.08)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#38bdf8',
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 300 },
+        plugins: {
+          legend: { labels: { color: '#94a3b8', font: { size: 12 } } }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#64748b', maxTicksLimit: 8 },
+            grid: { color: '#1e293b' }
+          },
+          y: {
+            ticks: { color: '#64748b' },
+            grid: { color: '#334155' },
+            suggestedMin: 15,
+            suggestedMax: 40
+          }
+        }
+      }
+    });
+
+    socket.on("temperature_update", function(data) {
+      const temp = parseFloat(data.temp);
+      const now = new Date().toLocaleTimeString();
+
+      document.getElementById('temp').innerText = temp.toFixed(1);
+
+      if (maxVal === null || temp > maxVal) { maxVal = temp; document.getElementById('max').innerText = temp.toFixed(1); }
+      if (minVal === null || temp < minVal) { minVal = temp; document.getElementById('min').innerText = temp.toFixed(1); }
+
+      dot.classList.add('live');
+      statusText.innerText = 'Live — last update ' + now;
+
+      chart.data.labels.push(now);
+      chart.data.datasets[0].data.push(temp);
+      if (chart.data.labels.length > 30) {
+        chart.data.labels.shift();
+        chart.data.datasets[0].data.shift();
+      }
+      chart.update();
+    });
+
+    socket.on('disconnect', function() {
+      dot.classList.remove('live');
+      statusText.innerText = 'Disconnected';
+    });
+  </script>
+
+</body>
+</html>

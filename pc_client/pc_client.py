@@ -8,7 +8,7 @@ BAUD_RATE = 9600
 
 MQTT_BROKER = "broker.hivemq.com"
 MQTT_PORT = 1883
-MQTT_TOPIC = "student/sensor/temperature"
+MQTT_TOPIC = "student/sensor/temperature/dondurkheim"
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
